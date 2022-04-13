@@ -5,13 +5,13 @@
 
 from dataclasses import dataclass
 
-drumdict = {'x': 36, 'o': 38, '-': 42, '=': 46}
+drumdict1 = {'x': 36, 'o': 38, '-': 42, '=': 46, ' ': 0}
 
 @dataclass
 class Hit:
-    instNums: list
-    start: float
-    stop: float
+    instNum: int
+    start: float = 0.0
+    stop: float = 0.0
 
 class Subdivision:
     def __init__(self):
@@ -53,7 +53,7 @@ class MeasureParser:
 
     def printevents(self):
         for e in self.events:
-            print("Inst: ", e.instNums, ", Start: ", e.start, ", Stop: ", e.stop)
+            print("Inst: ", e.instNum, ", Start: ", e.start, ", Stop: ", e.stop)
     
     def simultaneous(self, siml, start, stop):
         while(len(siml.items)):
@@ -122,3 +122,57 @@ class MeasureParser:
                 continue
             else:
                 print("unknown type in MeasureParser.parse")
+
+class DrumParser:
+    def __init__(self, string, drumdict):
+        self.s = list(string)
+        self.dd = drumdict
+        self.measure = Measure()
+        self.parse()
+
+    def simultaneous(self, parentitem):
+        
+        while(len(self.s)):
+            ch = self.s.pop(0)
+            if ch in self.dd.keys():
+                parentitem.additem(Hit(self.dd[ch]))
+            elif ch == '(':
+                siml = Simultaneous()
+                parentitem.additem(self.simultaneous(siml))
+            elif ch == '[':
+                subd = Subdivision()
+                parentitem.additem(self.subdivision(subd))
+            elif ch == ')':
+                break
+        return parentitem
+
+    def subdivision(self, parentitem):
+        while(len(self.s)):
+            ch = self.s.pop(0)
+            if ch in self.dd.keys():
+                parentitem.additem(Hit(self.dd[ch]))
+            elif ch == '[':
+                subd = Subdivision()
+                parentitem.additem(self.subdivision(subd))
+            elif ch == '(':
+                siml = Simultaneous()
+                parentitem.additem(self.simultaneous(siml))
+            elif ch == ']':
+                break
+            else:
+                print("invalid character")
+        return parentitem
+        
+    def parse(self):
+        while(len(self.s)):
+            ch = self.s.pop(0)
+            if ch in self.dd.keys():
+                self.measure.additem(Hit(instNum = self.dd[ch]))
+            elif ch == '(':
+                siml = Simultaneous()
+                self.measure.additem(self.simultaneous(siml))
+            elif ch == '[':
+                subd = Subdivision()
+                self.measure.additem(self.subdivision(subd))
+            else:
+                print("invalid character")
