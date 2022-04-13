@@ -1,3 +1,6 @@
 __pycache__/Data.cpython-310.pyc
 __pycache__/StringToDrum.cpython-310.pyc
-__pycache__/StringToDrum.cpython-310.pyc
+workspace.code-workspace
+*.mid
+__pycache__/
+*.py[cod]
