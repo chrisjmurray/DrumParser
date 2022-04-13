@@ -3,15 +3,15 @@
 # closed hi hat 42
 # open hi hat 46
 
-from dataclasses import dataclass
-
-drumdict1 = {'x': 36, 'o': 38, '-': 42, '=': 46, ' ': 0}
-
-@dataclass
 class Hit:
-    instNum: int
-    start: float = 0.0
-    stop: float = 0.0
+    def __init__(self, instNum = 0, start = 0.0, stop = 0.0):
+        self.instNum = instNum
+        self.start = start
+        self.stop = stop
+
+    def getduration(self):
+        return self.stop-self.stop
+
 
 class Subdivision:
     def __init__(self):
@@ -33,17 +33,6 @@ class Measure:
             self.items = []
     def additem(self, item):
         self.items.append(item)
-
-
-class StringStream:
-    def __init__(self, s):
-        self.s = list(s)
-    def getnext(self):
-        return self.s.pop(0)
-    def putback(self):
-        self.s.insert(0)
-    def isempty(self):
-        return (len(self.s) != 0)
 
 class MeasureParser:
     def __init__(self, measure):
