@@ -48,4 +48,77 @@ class StringStream:
 class MeasureParser:
     def __init__(self, measure):
         self.measure = measure
-        
+        self.events = [] 
+        self.parse()
+
+    def printevents(self):
+        for e in self.events:
+            print("Inst: ", e.instNums, ", Start: ", e.start, ", Stop: ", e.stop)
+    
+    def simultaneous(self, siml, start, stop):
+        while(len(siml.items)):
+            item = siml.items.pop(0)
+            if isinstance(item, Hit):
+                item.start = start
+                item.stop = stop
+                self.events.append(item)
+                continue
+            elif isinstance(item, Subdivision):
+                self.subdivision(item, start, stop)
+                continue
+            elif isinstance(item, Simultaneous):
+                self.simultaneous(item, start, stop)
+                continue
+            else:
+                print("unknown type in MeasureParser.simultaneous")
+
+    
+    def subdivision(self, subd, start, stop):
+        timestep = (stop - start)/len(subd.items)
+        stop = start + timestep
+        while(len(subd.items)):
+            item = subd.items.pop(0)
+            if isinstance(item, Hit):
+                item.start = start
+                item.stop = stop
+                self.events.append(item)
+                start += timestep
+                stop += timestep
+                continue
+            elif isinstance(item, Subdivision):
+                self.subdivision(item, start, stop)
+                start += timestep
+                stop += timestep
+                continue
+            elif isinstance(item, Simultaneous):
+                self.simultaneous(item, start, stop)
+                start += timestep
+                stop += timestep
+                continue
+            else:
+                print("unknown type in MeasureParser.subdivision")
+            
+    def parse(self):
+        start = 0
+        stop = 1
+        while (len(self.measure.items)):
+            item = self.measure.items.pop(0)
+            if isinstance(item, Hit):
+                item.start = start
+                item.stop = stop
+                self.events.append(item)
+                start += 1
+                stop += 1
+                continue
+            elif isinstance(item, Subdivision):
+                self.subdivision(item, start, stop)
+                start += 1
+                stop += 1
+                continue
+            elif isinstance(item, Simultaneous):
+                self.simultaneous(item, start, stop)
+                start += 1
+                stop += 1
+                continue
+            else:
+                print("unknown type in MeasureParser.parse")
