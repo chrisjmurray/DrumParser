@@ -1,7 +1,4 @@
-# bass drum 36
-# snare 38
-# closed hi hat 42
-# open hi hat 46
+from midiutil import MIDIFile
 
 class Hit:
     def __init__(self, instNum = 0, start = 0.0, stop = 0.0):
@@ -10,7 +7,7 @@ class Hit:
         self.stop = stop
 
     def getduration(self):
-        return self.stop-self.stop
+        return self.stop-self.start
 
 
 class Subdivision:
@@ -165,3 +162,22 @@ class DrumParser:
                 self.measure.additem(self.subdivision(subd))
             else:
                 print("invalid character")
+
+def std(string = "[([--]x)=][([--]o)=]"*20, 
+        filename = "drums", 
+        drumdict1 = {'x': 36, 'o': 38, '-': 42, '=': 46, ' ': 0}, 
+        tempo = 105):
+        
+    volume = 100
+    track    = 0
+    channel  = 9
+    time     = 0 
+    MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
+                          # automatically)
+    MyMIDI.addTempo(track, time, tempo)
+    dp = DrumParser(string, drumdict1)
+    mp = MeasureParser(dp.measure)
+    for e in mp.events:
+        MyMIDI.addNote(track, channel, e.instNum, e.start, e.getduration(), volume)
+    with open(filename+".mid", "wb") as output_file:
+        MyMIDI.writeFile(output_file)
