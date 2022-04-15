@@ -14,7 +14,7 @@ o snare drum
 - closed hihat
 = open hihat
 
-In the above example, the first four symbols, xoxo, will land on quarter notes. Symbols nested in parenthesis are played simultaneously. Symbols nested in brackets will divide the beat/subdivision into equal parts. The grammar allows for some interesting possibilities. All the string examples are multiplied simply to increase the duration of the output midi file.
+In the above example, the first four symbols, xoxo, will land on quarter notes. Symbols nested in parenthesis are played simultaneously. Symbols nested in brackets will divide the beat/subdivision into equal parts. Any level of nesting is allowed. All the string examples are multiplied simply to increase the duration of the output midi file.
 
 ### Examples
 ```python
